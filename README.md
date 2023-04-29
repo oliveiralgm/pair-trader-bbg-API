@@ -42,4 +42,6 @@ Finally we create 2 threads
   - one for receive instructions function - processes orders from strategy, sends to bloomberg, sends back order status
 
 
+## Market Data Server
 
+## Pair Trader GUI
