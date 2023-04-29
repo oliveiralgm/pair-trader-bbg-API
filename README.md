@@ -37,7 +37,7 @@ This class has the following methods:
   - modify order with strategy
   - close info connection
 
-- Finally we create 2 threads
+Finally we create 2 threads
   - one for listener function - starts listening to connection from the strategy software
   - one for receive instructions function - processes orders from strategy, sends to bloomberg, sends back order status
 
