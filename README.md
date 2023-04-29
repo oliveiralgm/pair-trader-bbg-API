@@ -13,7 +13,7 @@ The whole system has 3 files:
 - A market data server - connects to bloomberg data API and sends data to the strategy software.
 - Strategy software - manages the strategy based on the data from the marked data server and sends/receives data to/from the order management server.
 
-Order Management Server:
+## Order Management Server:
 
 Has a listener function:
   - listens and connects to the client (pair trade) - strategy software
