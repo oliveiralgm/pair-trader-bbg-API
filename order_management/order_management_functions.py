@@ -144,9 +144,6 @@ def listen_connections():
 
 
 
-
-
-
 # funcao que recebe as instrucoes dos clientes e envia para a BBG - cada trader tem seu proprio thread desta funcao
 #
 def receive_instructions(clnt, clientID):
@@ -211,18 +208,6 @@ def receive_instructions(clnt, clientID):
                     account = orderData[8]
                     tradernote = orderData[9]
                     corrID = id_generator(10)
-                    # print ticker
-                    # print type
-                    # print tif
-                    # print side
-                    # print handinstr
-                    # print lmtprc
-                    # print amount
-                    # print type
-                    # print lmtprc
-                    # print broker
-                    # print account
-                    # print tradernote
 
                     # lock o thread para enviar a ordem
                     lockInstruction.acquire()
