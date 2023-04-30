@@ -1,4 +1,21 @@
 '''
+
+A Classe Pair cria uma instancia da estrategia de cross-border arbitrage. A estrategia se baseia na cotacao de fechamento
+do ativo operado, a cotacao do cambio e o spread requisitado pelo oeprador. Com esses dados ele calcula o preco a ser apregoado
+e envia a ordem com os dados pre definidos pelo operador.
+
+Assim que a ordem eh enviada o trader recebe a confirmacao e o sequence number dessa ordem e passa a receber seu status.
+Para cada tipo de status recebido o trader chama o callback adequado. Ao mesmo tempo em outro thread sao recebidos o market
+data, que sao usados para recalcular o preco de apregoamento e enviar um pedido de alteracao da ordem. Ele nao recebe
+confirmacao da alteracao, mas recebe um status de working e o novo preco. Se o novo preco for diferente do preco
+calculado ele reenvia o pedido de alteracao.
+
+Ao receber o fill o callback envia a outra perna do trader para fechar o trade ou para abrir outra posicao. O trader fica
+nesse loop ate ser requisitado o stop pelo operador ou atingir a posicao maxima requisitada (ainda nao implementado)
+
+Este modulo eh inserido no GUI_Spread_Sniper_II.py '''
+
+'''
 CLASSE de Par de Arbitragem
 '''
 
