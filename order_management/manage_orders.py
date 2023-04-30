@@ -1,5 +1,35 @@
 # classe de gerenciamento de ordens
+
+import blpapi
+import socket
+import datetime
+from enum import Enum
+import time
+import sys
+import string
+import random
+from threading import Thread
+import threading
+import wx
+import logging
+
+
 class ManageOrders():
+    '''
+    Class ManageOrders - connects Bloombergs(BBG) EMSX API, gets order info from PairTrader and sends to BBG, recieves order status
+    from BBG and sends to PairTrader to be processed.
+    
+    methods:
+    open_BBG_Connection - 
+    closeBBGconnection
+    recieveResponseandCallback
+    createOrderandRoute
+    createOrderandRouteWithStrat
+    cancelOrder
+    modifyOrder
+    modifyOrderWithStrat
+    
+    '''
     # cria a conexao com o BBG e os requests para envio de instrucoes
     def open_BBG_Connection(self):
         # define a que computador vai se conectar
@@ -24,19 +54,6 @@ class ManageOrders():
         # define o tipo de servico
         self.service = self.session.getService(d_service)
 
-        #  cria as variaveis globais de request para enviar as ordens para o EMSX API
-        # global request_Create_order_and_route
-        # global request_Create_order_and_route_With_Strat
-        # global request_Modify_Route
-        # global request_Modify_Route_With_Strat
-        # global request_Cancel_Route
-
-
-        # request_Create_order_and_route_With_Strat = self.service.createRequest("CreateOrderAndRouteWithStrat")
-        # request_Create_order_and_route = self.service.createRequest("CreateOrderAndRoute")
-        # request_Modify_Route = self.service.createRequest("ModifyRoute")
-        # request_Modify_Route_With_Strat = self.service.createRequest("ModifyRouteWithStrat")
-        # request_Cancel_Route = self.service.createRequest("CancelRoute")
 
     def closeBBGconnection(self):
         self.session.stop()
@@ -66,16 +83,13 @@ class ManageOrders():
                         # logging.info("Inside createOrderandRoute inside while - msg.correlationIds()[0].value(): " + str(msg.correlationIds()[0].value()))
                         # logging.info("Inside createOrderandRoute inside while - requestID.value(): " + str(requestID.value()))
                         # logging.info("Inside createOrderandRoute inside while - Message: %s", (msg.toString()))
-                        # if msg.correlationIds()[0].value() == requestID.value():
 
                         logging.info(str(clientID) + " - Inside recieveResponseandCallback inside while - Message Type: %s", msg.messageType())
                         # Se eh mensagem de erro
                         if msg.messageType() == ERROR_INFO:
                             errorCode = msg.getElementAsString("ERROR_CODE")
                             errorMessage = msg.getElementAsString("ERROR_MESSAGE")
-                            # reason = msg.getElement("reason");
-                            # errorcode_reason = reason.getElementAsInteger("errorCode")
-                            # description = reason.getElementAsString("description")
+
                             # print "Error code reason: " + errorcode_reason
                             # print "Error code description: " + description
                             logging.info(str(clientID) + " - ERROR CODE: " + str(errorCode) + " - ERROR MESSAGE: " + str(errorMessage))
@@ -105,9 +119,7 @@ class ManageOrders():
                             # cria a associacao da conexao com o sequence number da ordem para depois poder enviar as info das ordens
                             # para o PairTrader daquela conexao
                             clientOrder[emsx_sequence] = client_Dict[clientID]
-                            # print clientOrder[emsx_sequence]
-                            # print "EMSX_SEQUENCE: %d\tEMSX_ROUTE_ID: %d\tMESSAGE: %s" % (
-                            #     emsx_sequence, emsx_route_id, message)
+
                             # logging.INFO("EMSX_SEQUENCE: %d\tEMSX_ROUTE_ID: %d\tMESSAGE: %s" % (
                             #     emsx_sequence, emsx_route_id, message))
 
@@ -121,7 +133,7 @@ class ManageOrders():
                                 emsx_sequence = msg.getElementAsString("EMSX_SEQUENCE")
                                 emsx_route_id = msg.getElementAsString("EMSX_ROUTE_ID")
                                 message = msg.getElementAsString("MESSAGE")
-                                # print str(client_Dict[clientID])
+
                                 # envia mensagem para o PairTrader com o sequence number e route ID da ordem criada
                                 client_Dict[clientID].send(
                                     "1," + str(emsx_sequence) + "," + str(emsx_route_id) + "," + str(message) + ";")
@@ -130,10 +142,7 @@ class ManageOrders():
                                 # cria a associacao da conexao com o sequence number da ordem para depois poder enviar as info das ordens
                                 # para o PairTrader daquela conexao
                                 clientOrder[emsx_sequence] = client_Dict[clientID]
-                                # print clientOrder[clientID]
-                                # print "recebi a mensagem da ordem: " + str(datetime.datetime.utcnow())
-                                # print "EMSX_SEQUENCE: %d\tEMSX_ROUTE_ID: %d\tMESSAGE: %s" % (
-                                #     emsx_sequence, emsx_route_id, message)
+
                             except:
                                 logging.info(str(clientID) + " - Inside recieveResponseandCallback: deu algum pau no bloco iniciando na linha 4787 ")
 
@@ -234,82 +243,6 @@ class ManageOrders():
         except:
             logging.info("Inside createOrderandRoute inside while - deu pau no sendRequest: request_Create_order_and_route")
 
-        # logging.info("Inside createOrderandRoute inside while - client_Dict[clientID]): " + str(client_Dict[clientID]))
-        # timeout = 10
-
-        # try:
-        #
-        #     while (True):
-        #         # recebe um evento do BBG
-        #         ev = self.session.nextEvent(timeout)
-        #         for msg in ev:
-        #             logging.info("Inside createOrderandRoute inside while - Message: " + str(msg))
-        #             logging.info("Inside createOrderandRoute inside while - ev.eventType(): " + str(ev.eventType()))
-        #             logging.info("msg.correlationIds()[0].value(): " + str(msg.correlationIds()[0].value()))
-        #             print msg
-        #             # evento eh do tipo RESPONSE
-        #             if ev.eventType() == blpapi.Event.RESPONSE:
-        #
-        #                 logging.info("Processing RESPONSE Event")
-        #                 # se a mensagem tem o correlation ID da ordem enviada
-        #
-        #                 logging.info("Inside createOrderandRoute inside while - clientID: " + str(clientID))
-        #                 logging.info("Inside createOrderandRoute inside while - msg.correlationIds()[0].value(): " + str(msg.correlationIds()[0].value()))
-        #                 logging.info("Inside createOrderandRoute inside while - requestID.value(): " + str(requestID.value()))
-        #                 logging.info("Inside createOrderandRoute inside while - Message: %s", (msg.toString()))
-        #                 if msg.correlationIds()[0].value() == requestID.value():
-        #
-        #                     logging.info("Inside createOrderandRoute inside while - Message Type: %s", msg.messageType())
-        #                     # Se eh mensagem de erro
-        #                     if msg.messageType() == ERROR_INFO:
-        #                         errorCode = msg.getElementAsString("ERROR_CODE")
-        #                         errorMessage = msg.getElementAsString("ERROR_MESSAGE")
-        #                         # reason = msg.getElement("reason");
-        #                         # errorcode_reason = reason.getElementAsInteger("errorCode")
-        #                         # description = reason.getElementAsString("description")
-        #                         # print "Error code reason: " + errorcode_reason
-        #                         # print "Error code description: " + description
-        #                         print "ERROR CODE: %d\tERROR MESSAGE: %s" ,errorCode, errorMessage
-        #                         # envia a mensagem de erro para ser handled no PairTrader
-        #                         client_Dict[clientID].send("3, Broker - " + str(broker) + " : " + str(errorMessage))
-        #                         # LOG
-        #                         logging.info("Inside createOrderandRoute inside while - Deu erro em %s:  %s:%s:%s:%s", str(clientID), str(ticker), str(amount), str(errorCode),
-        #                                       str(errorMessage))
-        #                         logging.info("Inside createOrderandRoute inside while - Deu erro em %s: %s", str(clientID), str(errorMessage))
-        #                     # se eh mensagem de ordem criada
-        #                     elif msg.messageType() == CREATE_ORDER_AND_ROUTE:
-        #                         logging.info("Inside createOrderandRoute inside while - clientID: " + str(clientID))
-        #                         logging.info("Inside createOrderandRoute inside while - msg.correlationIds()[0].value(): " + str(msg.correlationIds()[0].value()))
-        #                         logging.info("Inside createOrderandRoute inside while - requestID.value(): " + str(requestID.value()))
-        #                         logging.info("Inside createOrderandRoute inside while - Message: %s", (msg.toString()))
-        #                         # sequence number da ordem
-        #                         emsx_sequence = msg.getElementAsString("EMSX_SEQUENCE")
-        #                         # route ID da ordem
-        #                         emsx_route_id = msg.getElementAsString("EMSX_ROUTE_ID")
-        #                         # mensagem da BBG
-        #                         message = msg.getElementAsString("MESSAGE")
-        #                         # Envia a instrucao de envio de ordem sem estrategia para ser handled pelo PairTrader
-        #                         client_Dict[clientID].send(
-        #                             "1," + str(emsx_sequence) + "," + str(emsx_route_id) + "," + str(message))
-        #                         logging.info("Inside createOrderandRoute inside while - Criou a ordem e enviou a mensagem para %s:  {1, %s:%s:%s}", str(clientID),
-        #                                      str(emsx_sequence), str(emsx_route_id), str(message))
-        #                         # cria a associacao da conexao com o sequence number da ordem para depois poder enviar as info das ordens
-        #                         # para o PairTrader daquela conexao
-        #                         clientOrder[emsx_sequence] = client_Dict[clientID]
-        #                         # print clientOrder[emsx_sequence]
-        #                         # print "EMSX_SEQUENCE: %d\tEMSX_ROUTE_ID: %d\tMESSAGE: %s" % (
-        #                         #     emsx_sequence, emsx_route_id, message)
-        #                         # logging.INFO("EMSX_SEQUENCE: %d\tEMSX_ROUTE_ID: %d\tMESSAGE: %s" % (
-        #                         #     emsx_sequence, emsx_route_id, message))
-        #
-        #                     # session.stop()
-        #                     return
-        #                 else:
-        #                     print "Message: %s" % (msg.toString())
-        #
-        # except:
-        #     logging.info("Inside createOrderandRoute inside while - deu pau no recebimento de confirmacao de: request_Create_order_and_route")
-
     # metodo de envio de ordens com estrategia
     def createOrderandRouteWithStrat(self, ticker, amount, orderType, TIF, Hand_Instruction, Side, lmtPrice, broker,
                                      account, emsx_Notes, stratName, corrID, clientID):
@@ -384,79 +317,6 @@ class ManageOrders():
         except:
             logging.info("deu pau no sendRequest: request_Create_order_and_route_With_Strat")
 
-        # logging.info("client_Dict[clientID]): " + str(client_Dict[clientID]))
-        # timeout = 10
-        #
-        # try:
-        #
-        #     while (True):
-        #         # recebe um evento do BBG
-        #         ev = self.session.nextEvent(timeout)
-        #         for msg in ev:
-        #             logging.info("Inside createOrderandRouteWithStrat inside while - Message: " + str(msg))
-        #             logging.info("Inside createOrderandRouteWithStrat inside while - ev.eventType(): " + str(ev.eventType()))
-        #             logging.info("msg.correlationIds()[0].value(): " + str(msg.correlationIds()[0].value()))
-        #             # print str(datetime.datetime.utcnow())
-        #             # se evento eh do tipo RESPONSE
-        #             if ev.eventType() == blpapi.Event.RESPONSE:
-        #
-        #                 logging.info("Processing RESPONSE Event: ")
-        #                 # Se correlationID eh o mesmo que o enviado
-        #                 logging.info("clientID: " + str(clientID))
-        #                 logging.info("msg.correlationIds()[0].value(): " + str(msg.correlationIds()[0].value()))
-        #                 logging.info("requestID.value(): " + str(requestID.value()))
-        #                 logging.info("Message: %s", (msg.toString()))
-        #                 if msg.correlationIds()[0].value() == requestID.value():
-        #
-        #                     logging.info("Message Type: %s", msg.messageType())
-        #                     # mensagem de erro
-        #                     if msg.messageType() == ERROR_INFO:
-        #                         errorCode = msg.getElementAsString("ERROR_CODE")
-        #                         errorMessage = msg.getElementAsString("ERROR_MESSAGE")
-        #                         # reason = msg.getElement("reason");
-        #                         # errorcode_reason = reason.getElementAsInteger("errorCode")
-        #                         # description = reason.getElementAsString("description")
-        #                         # print "Error code reason: " + errorcode_reason
-        #                         # print "Error code description: " + description
-        #                         print "ERROR CODE: %d\tERROR MESSAGE: %s" ,errorCode, errorMessage
-        #                         client_Dict[clientID].send("3, Broker - " + str(broker) + " : " + str(errorMessage))
-        #                         logging.info("Deu erro em %s:  %s:%s:%s:%s", str(clientID), str(ticker), str(amount), str(errorCode),
-        #                                       str(errorMessage))
-        #                         logging.info("Deu erro em %s: %s", str(clientID), str(errorMessage))
-        #                     # mensagem de ordem criada
-        #                     elif msg.messageType() == CREATE_ORDER_AND_ROUTE_WITH_STRAT:
-        #                         try:
-        #                             logging.info("clientID: " + str(clientID))
-        #                             logging.info("msg.correlationIds()[0].value(): " + str(msg.correlationIds()[0].value()))
-        #                             logging.info("requestID.value(): " + str(requestID.value()))
-        #                             logging.info("Message: %s", (msg.toString()))
-        #                             emsx_sequence = msg.getElementAsString("EMSX_SEQUENCE")
-        #                             emsx_route_id = msg.getElementAsString("EMSX_ROUTE_ID")
-        #                             message = msg.getElementAsString("MESSAGE")
-        #                             print str(client_Dict[clientID])
-        #                             # envia mensagem para o PairTrader com o sequence number e route ID da ordem criada
-        #                             client_Dict[clientID].send(
-        #                                 "1," + str(emsx_sequence) + "," + str(emsx_route_id) + "," + message)
-        #                             logging.info("Criou a ordem e enviou a mensagem para %s:  {1, %s:%s:%s}", str(clientID),
-        #                                          str(emsx_sequence), str(emsx_route_id), str(message))
-        #                             # cria a associacao da conexao com o sequence number da ordem para depois poder enviar as info das ordens
-        #                             # para o PairTrader daquela conexao
-        #                             clientOrder[emsx_sequence] = client_Dict[clientID]
-        #                             # print clientOrder[clientID]
-        #                             # print "recebi a mensagem da ordem: " + str(datetime.datetime.utcnow())
-        #                             # print "EMSX_SEQUENCE: %d\tEMSX_ROUTE_ID: %d\tMESSAGE: %s" % (
-        #                             #     emsx_sequence, emsx_route_id, message)
-        #                         except:
-        #                             logging.info("Inside createOrderandRouteWithStrat: deu algum pau no bloco iniciando na linha 562 ")
-        #
-        #                     # session.stop()
-        #                     return
-        #                 else:
-        #                     logging.info("Message Type: %s", str(msg.messageType()))
-        #
-        # except:
-        #     logging.info("deu pau no recebimento de confirmacao de: request_Create_order_and_route_With_Strat")
-
 
     def cancelOrder(self, sequence_num, route_ID, corrID, clientID):
 
@@ -472,8 +332,6 @@ class ManageOrders():
 
         # if options.EMSX_TRADER_UUID:            request.set("EMSX_TRADER_UUID", options.EMSX_TRADER_UUID)
 
-        # print "Request: %s" % request_Cancel_Route.toString()
-
         requestID = blpapi.CorrelationId(corrID)
 
         try:
@@ -481,50 +339,6 @@ class ManageOrders():
         except:
             logging.info("deu pau no sendRequest: request_Cancel_Route")
 
-        # timeout = 10
-        #
-        # try:
-        #
-        #     while (True):
-        #
-        #         ev = self.session.nextEvent(timeout)
-        #         for msg in ev:
-        #
-        #             if ev.eventType() == blpapi.Event.RESPONSE:
-        #
-        #                 logging.info("Processing RESPONSE Event")
-        #
-        #                 if msg.correlationIds()[0].value() == requestID.value():
-        #
-        #                     logging.info("Message Type: %s", msg.messageType())
-        #
-        #                     if msg.messageType() == ERROR_INFO:
-        #                         errorCode = msg.getElementAsInteger("ERROR_CODE")
-        #                         errorMessage = msg.getElementAsString("ERROR_MESSAGE")
-        #                         reason = msg.getElement("reason");
-        #                         errorcode_reason = reason.getElementAsInteger("errorCode")
-        #                         description = reason.getElementAsString("description")
-        #                         print "ERROR CODE: %d\tERROR MESSAGE: %s" % (errorCode, errorMessage)
-        #                     elif msg.messageType() == CANCEL_ROUTE:
-        #                         logging.info("clientID: " + str(clientID))
-        #                         logging.info("msg.correlationIds()[0].value(): " + str(msg.correlationIds()[0].value()))
-        #                         logging.info("requestID.value(): " + str(requestID.value()))
-        #                         logging.info("Message: %s", (msg.toString()))
-        #                         status = msg.getElementAsInteger("STATUS")
-        #                         message = msg.getElementAsString("MESSAGE")
-        #                         client_Dict[clientID].send(
-        #                             "2," + str(sequence_num) + "," + str(route_ID) + "," + str(message))
-        #                         logging.info("Criou a ordem e enviou a mensagem para %s:  {2, %s:%s:%s}", str(clientID),
-        #                                      str(sequence_num), str(route_ID), str(message))
-        #                         # print "STATUS: %d\tMESSAGE: %s" % (status, message)
-        #
-        #                     # session.stop()
-        #                     # return
-        #                 else:
-        #                     pass
-        #
-        # except:
-        #     logging.info("deu pau no recebimento de confirmacao de: request_Cancel_Route")
 
     def modifyOrder(self, sequence_num, route_ID, amount, lmt, ticker, TIF, lmtPrice, corrID, clientID):
 
