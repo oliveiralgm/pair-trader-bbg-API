@@ -89,7 +89,7 @@ logging.basicConfig(filename='OrderManager.log', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(threadName)-10s - %(message)s', )
 
 # abre conexao TCP para receber instrucoes de ordens e enviar mensagem de retorno apenas - o envio de info de ordens sera por outra funcao
-def listenConnections():
+def listen_connections():
     # dicionario de clientes relacionando a conexao recebida com o ID do trader
     global client_Dict
     # dicionario que relaciona a ordem com a conexao
@@ -150,7 +150,7 @@ def listenConnections():
 
 # funcao que recebe as instrucoes dos clientes e envia para a BBG - cada trader tem seu proprio thread desta funcao
 #
-def receiveInstructions(clnt, clientID):
+def receive_instructions(clnt, clientID):
     # lock para o thread
     lockInstruction = threading.Lock()
     # logging.info("ClientID: " + str(clientID))
@@ -360,7 +360,7 @@ def main():
     # cria os threads
 
     # thread que escuta as conexoes dos Traders
-    t = Thread(target=listenConnections)
+    t = Thread(target=listen_onnections)
     # Thread que recebe informacoes das ordens do BBG e envia para os Traders
     t2 = Thread(target=sendOrderInfo)
 
