@@ -5,7 +5,8 @@ I learned python while developing this system.
 It is composed by:
 - Market Data Server - recieves marked data coming from BBG in realtime.
 - Order Management Server - manages orders recieved from the PairTrader and sends them to BBG then processes callbacks from the orders. Also in realtime.
-- PairTrader - has the strategy, pairs, desired margin and FX calculation, as well as the creation of the GUI using wx.
+- PairTrader - has the strategy, pairs, desired margin, sends orders, recieves market data and FX calculation.
+- GUI - integrates PairTrader into a GUI built on wx
 
 All files were created into exe files and would be run either in the same computer or from different computers (servers on one, pairtrader on other computers)
 
