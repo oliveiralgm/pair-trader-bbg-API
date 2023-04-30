@@ -709,29 +709,3 @@ class ManageOrders():
             # except:
             #     logging.info("deu pau no recebimento de confirmacao de: request_Modify_Route_With_Strat")
 
-def closeInfoConnection():
-    eventHandler.closeConnection()
-
-def sendOrderInfo():
-    sessionOptions = blpapi.SessionOptions()
-    sessionOptions.setServerHost(d_host)
-    sessionOptions.setServerPort(d_port)
-
-    print "Connecting to %s:%d" % (d_host, d_port)
-    global eventHandler
-    global session
-    eventHandler = SessionEventHandler()
-
-    session = blpapi.Session(sessionOptions, eventHandler.processEvent)
-
-    if not session.start():
-        wx.MessageBox("Failed to start session with Bloomberg - please check and try again")
-        return
-
-    try:
-        # Wait for enter key to exit application
-        print "Press ENTER to quit"
-        raw_input()
-    finally:
-        session.stop()
-
