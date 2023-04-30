@@ -13,13 +13,12 @@ acoplado para maior seguranca e controle das ordens.
 Este modulo eh um Stand alone app que deve ser rodado na maquina onde se conectara com o BBG. A maquina deve ter o BBG
 instalado, mais ainda, deve ser habilitado para operar o EMSX API no modulo programming.
 
---------DISCLAIMER ------
-Este codigo eh propriedade da XP Securities, LLC. Esta eh uma versao beta que nao deve ser rodada sem supervisao
-do autor e nao deve ser distribuida.
 
 '''
 
 # Importa as dependencias do codigo
+import manage_orders
+import session_event_handler
 import blpapi
 import socket
 import datetime
@@ -378,21 +377,3 @@ def send_order_info():
     finally:
         session.stop()
 
-
-
-
-
-def main():
-    # cria os threads
-
-    # thread que escuta as conexoes dos Traders
-    t = Thread(target=listen_onnections)
-    # Thread que recebe informacoes das ordens do BBG e envia para os Traders
-    t2 = Thread(target=sendOrderInfo)
-
-    # inicializa os threads
-    t.start()
-    t2.start()
-
-
-main()
