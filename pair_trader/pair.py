@@ -1,6 +1,26 @@
 '''
 CLASSE de Par de Arbitragem
 '''
+
+# Importa as dependencias do codigo
+import socket
+import string
+import random
+import math
+import time
+import datetime
+import threading
+import winsound
+from threading import Thread, Lock
+import logging
+from enum import Enum
+import win32com.client as win32
+# from pubsub import pub
+from wx.lib.pubsub import pub
+import wx
+
+
+
 class Pair():
 
     #  Metodo de inicializacao do Par
