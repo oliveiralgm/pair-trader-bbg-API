@@ -36,6 +36,127 @@ import win32com.client as win32
 from wx.lib.pubsub import pub
 import wx
 
+# create logger
+lgr = logging.getLogger('myapp')
+lgr.setLevel(logging.DEBUG)
+# add a file handler
+fh1 = logging.FileHandler('teste1_test.log')
+fh = logging.FileHandler('myapp1_test.log')
+fh1.setLevel(logging.INFO)
+fh.setLevel(logging.DEBUG)
+# create a formatter and set the formatter for the handler.
+frmt = logging.Formatter('%(asctime)s - %(levelname)s - %(threadName)-10s - %(message)s')
+fh.setFormatter(frmt)
+fh1.setFormatter(frmt)
+# add the Handler to the logger
+lgr.addHandler(fh)
+lgr.addHandler(fh1)
+
+
+
+# logging.basicConfig(filename='OrdersSent_LOG.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(threadName)-10s - %(message)s', )
+
+# Classes de Enum para acessar itens em Estruturas de dados
+# Enum da lista das ordens de apregoamento
+class placeOrderData(Enum):
+    TICKER              = 0
+    AMOUNT              = 1
+    TYPE                = 2
+    TIF                 = 3
+    HAND_INSTR          = 4
+    SIDE                = 5
+    BROKER              = 6
+    ACCOUNT             = 7
+    TRADER_NOTES        = 8
+    CORRID              = 9
+    BROKER_STRATEGY     = 10
+    USE_STRAT           = 11
+    ORDER_SENT          = 12
+    AVG_PRC             = 13
+    LMTPRC              = 14
+    FILL                = 15
+    SPREAD_REQ          = 16
+    RATIO               = 17
+    USEFX               = 18
+    TOTPAIRVOL          = 19 # posicao total do par a ser estartado
+
+    
+    
+# Enum da lista das ordens de fechamento da operacao de arbitragem
+class closeOrderData(Enum):
+    TICKER              = 0
+    AMOUNT              = 1
+    TYPE                = 2
+    TIF                 = 3
+    HAND_INSTR          = 4
+    SIDE                = 5
+    BROKER              = 6
+    ACCOUNT             = 7
+    TRADER_NOTES        = 8
+    CORRID              = 9
+    BROKER_STRATEGY     = 10
+    USE_STRAT           = 11
+    ORDER_SENT          = 12
+    AVG_PRC             = 13
+    LMTPRC              = 14
+    FILL                = 15
+
+    
+    
+# Enum da lista de info de FX
+class FXData(Enum):
+    TICKER              = 0
+    PRICE               = 1
+    CASADO_BID          = 2
+    CASADO_ASK          = 3
+
+    
+    
+# Enum dos tipos de instrucoes de ordens
+class orderinstruction(Enum):
+    SEND_ORDER              = 1
+    SEND_ORDER_WITH_STRAT   = 2
+    MODIFY_ORDER            = 3
+    MODIFY_ORDER_WITH_STRAT = 4
+    CANCEL_ORDER            = 5
+
+    
+    
+# Enum dos status das ordens enviadas
+class orderstatus(Enum):
+    WORKING     = 1
+    FILLED      = 2
+    SENT        = 3
+    NEW         = 4
+    ASSIGN      = 5
+    CANCEL      = 6
+    CXLREQ      = 7
+    REPPEN      = 8
+    REJECTED    = 9
+    CXLRPRQ     = 10
+
+    
+    
+# Enum do SIDE das ordens
+class Side(Enum):
+    BUY     = 1
+    SELL    = 2
+    SHRT    = 3
+
+    
+    
+# Enum do FIELD das ordens
+class field(Enum):
+    ASK         = 1
+    BID         = 2
+    LAST_PRICE  = 3
+
+    
+    
+# funcao geradora de string randomico para ser ID do trader
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
 
 
 class Pair():
