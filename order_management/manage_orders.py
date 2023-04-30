@@ -20,14 +20,14 @@ class ManageOrders():
     from BBG and sends to PairTrader to be processed.
     
     methods:
-    open_BBG_Connection - 
-    closeBBGconnection
-    recieveResponseandCallback
-    createOrderandRoute
-    createOrderandRouteWithStrat
-    cancelOrder
-    modifyOrder
-    modifyOrderWithStrat
+    open_BBG_Connection - opens connection with bloomberg EMSX API
+    closeBBGconnection - closes connections with bbg api
+    recieveResponseandCallback - recieves response to the command sent from bbg
+    createOrderandRoute - creates an order and routes to bbg through a specific broker
+    createOrderandRouteWithStrat - creates an order with a strategy and routes to bbg through a specific broker
+    cancelOrder - cancels an order
+    modifyOrder - modifies and order
+    modifyOrderWithStrat - modifies and order with strategy
     
     '''
     # cria a conexao com o BBG e os requests para envio de instrucoes
