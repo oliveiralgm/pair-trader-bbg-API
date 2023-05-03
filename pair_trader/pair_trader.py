@@ -206,7 +206,7 @@ class Pair():
                         # time.sleep(1)
                         # inicializa o thread do OMS
                         self.pairRunning = True
-                        # self.orderManagement_Thread.start()
+                        self.orderManagement_Thread.start()
                     except:
                         # exception para debug
                         print "Deu pau em algum thread"
